@@ -10,14 +10,19 @@ using System.Security.Cryptography.Pkcs;
 
 namespace DAMSecurityLib.Certificates
 {
-    class Autosigned
+    /// <summary>
+    /// Class to work with autosigned certifictes
+    /// </summary>
+    public class Autosigned
     {
+
         public static void Generate()
         {
             using (RSA rsa = RSA.Create())
             {
+                X500DistinguishedName dn = new X500DistinguishedName("CN=SelfSignedCert,O=userName");
                 // Create a certificate request with the RSA key pair
-                CertificateRequest certificateRequest = new CertificateRequest("CN=SelfSignedCert", rsa, HashAlgorithmName.SHA256, RSASignaturePadding.Pkcs1);
+                CertificateRequest certificateRequest = new CertificateRequest(dn, rsa, HashAlgorithmName.SHA256, RSASignaturePadding.Pkcs1);
 
                 // Set the validity period of the certificate
                 DateTimeOffset notBefore = DateTimeOffset.UtcNow;
@@ -29,6 +34,7 @@ namespace DAMSecurityLib.Certificates
                 // Save certificate to a file
                 string certFilePath = "selfsigned.pfx";
                 string certPassword = "123456";
+              
                 byte[] certBytes = certificate.Export(X509ContentType.Pfx, certPassword);
                 // Falta guardar els bytes en un fitxer amb el nom indicat
 
@@ -40,6 +46,11 @@ namespace DAMSecurityLib.Certificates
                 cms.ComputeSignature(signer);
                 byte[] signedData = cms.Encode();
             }
+        }
+   
+        public static bool Sign(X509Certificate2 certificate, byte[]document)
+        {
+            return false;
         }
     }
 }
