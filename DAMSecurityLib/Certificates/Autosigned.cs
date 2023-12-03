@@ -48,9 +48,43 @@ namespace DAMSecurityLib.Certificates
             }
         }
    
-        public static bool Sign(X509Certificate2 certificate, byte[]document)
+        internal static X509Certificate2 CreateNew()
         {
-            return false;
+            using (RSA rsa = RSA.Create())
+            {
+                X500DistinguishedName dn = new X500DistinguishedName("CN=SelfSignedCert,O=userName");
+                // Create a certificate request with the RSA key pair
+                CertificateRequest certificateRequest = new CertificateRequest(dn, rsa, HashAlgorithmName.SHA256, RSASignaturePadding.Pkcs1);
+
+                // Set the validity period of the certificate
+                DateTimeOffset notBefore = DateTimeOffset.UtcNow;
+                DateTimeOffset notAfter = notBefore.AddYears(1);
+
+                // Create a self-signed certificate from the request
+                X509Certificate2 certificate = certificateRequest.CreateSelfSigned(notBefore, notAfter);
+                return certificate;
+            }
+         
         }
+
+        public static void SignWithNewCertificate(string inputFileName, string outFileName)
+        {
+            X509Certificate2 certificate = Autosigned.CreateNew();
+            byte[] input = File.ReadAllBytes(inputFileName);
+            byte[] output = Sign(certificate, input);
+            File.WriteAllBytes(outFileName, output);
+        }
+
+        public static byte[] Sign(X509Certificate2 certificate, byte[]document)
+        {
+            ContentInfo contentInfo = new ContentInfo(document);
+            SignedCms signedCms = new SignedCms(contentInfo, true);
+            CmsSigner signer = new CmsSigner(SubjectIdentifierType.IssuerAndSerialNumber, certificate);
+            signedCms.ComputeSignature(signer);
+
+            return signedCms.Encode();
+        }
+
+
     }
 }
