@@ -7,6 +7,8 @@ using System.Security.Cryptography.X509Certificates;
 using System.Security.Cryptography;
 using System.Security.Cryptography.Xml;
 using System.Security.Cryptography.Pkcs;
+using iText.Kernel.Pdf;
+using iText.Signatures;
 
 namespace DAMSecurityLib.Certificates
 {
@@ -67,9 +69,21 @@ namespace DAMSecurityLib.Certificates
          
         }
 
-        public static void SignWithNewCertificate(string inputFileName, string outFileName)
+        public static void SignPdfWithNewCertificate(string inputFileName, string outFileName)
         {
+            
             X509Certificate2 certificate = Autosigned.CreateNew();
+            using(PdfReader pdfReader = new PdfReader(inputFileName))
+            {
+                using (FileStream outputStream = new FileStream(outFileName, FileMode.Create))
+                {
+                    using (PdfWriter pdfWriter = new PdfWriter(outputStream))
+                    {
+                        X509Certificate2Signature s;
+                        IExternalSignature signature = X509Certificate2Signature(certificate)
+                    }
+                }
+            }
             byte[] input = File.ReadAllBytes(inputFileName);
             byte[] output = Sign(certificate, input);
             File.WriteAllBytes(outFileName, output);
