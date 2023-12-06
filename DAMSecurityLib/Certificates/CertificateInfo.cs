@@ -1,8 +1,10 @@
-﻿using System;
+﻿using Org.BouncyCastle.Tls;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics.Metrics;
 using System.Linq;
 using System.Security.AccessControl;
+using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -115,6 +117,19 @@ namespace DAMSecurityLib.Certificates
                 }
                 return dn;
             }
+        }
+
+        /// <summary>
+        /// Returns CertificateInfo of the certificate passes as parametres
+        /// </summary>
+        /// <param name="certificatePath">Certificate path in disk</param>
+        /// <param name="certificatePassword">Certificate password</param>
+        /// <returns>CertificateInfo associated to the certificate</returns>
+        public static CertificateInfo FromCertificate(string certificatePath, string certificatePassword)
+        {
+            var certificate = new X509Certificate2(certificatePath, certificatePassword);
+            
+            return new CertificateInfo();
         }
     }
 }
