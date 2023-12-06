@@ -24,7 +24,7 @@ namespace DAMSecurityLib.Certificates
         /// Certificate Organization Name
         /// This property is optional
         /// </summary>
-        public string? Organization { get; set;} = null;
+        public string Organization { get; set;} = "UserName";
         
         /// <summary>
         /// Certificate Organization Locality
