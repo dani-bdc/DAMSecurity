@@ -17,6 +17,7 @@ namespace DAMSecurityLib.Crypto
     public class Sign
     {
         private X509Certificate2? certificate;
+        private Pkcs12Store pkcs12Store = new Pkcs12StoreBuilder().Build();
 
         public  void SignPdf(string inputFileName, string outputFileName)
         {
@@ -24,7 +25,7 @@ namespace DAMSecurityLib.Crypto
             string outTestFileName = @"c:\test\test1_sign2.pdf";
             string storePath = @"c:\test\cert.pfx";
             char[] storePass = "123456".ToCharArray();
-            string storeAlias = "RSAkey";
+            string storeAlias = "";
 
             Pkcs12Store pkcs12 = new Pkcs12StoreBuilder().Build();
             pkcs12.Load(new FileStream(storePath, FileMode.Open, FileAccess.Read), storePass);
@@ -77,6 +78,8 @@ namespace DAMSecurityLib.Crypto
         public void InitCertificate(string pfxFileName, string pfxPassword)
         {
             certificate = new X509Certificate2(pfxFileName, pfxPassword);
+
+            pkcs12Store.Load(new FileStream(pfxFileName, FileMode.Open, FileAccess.Read), pfxPassword.ToCharArray());
         }
     }
 }

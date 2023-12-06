@@ -8,17 +8,75 @@ using System.Threading.Tasks;
 
 namespace DAMSecurityLib.Certificates
 {
+    /// <summary>
+    /// This class  establishes the necessary properties to obtain the information of the generated
+    /// digital certificates
+    /// </summary>
     public class CertificateInfo
     {
+        /// <summary>
+        /// Certificate CommonName
+        /// This property is mandatory and its default value is SelfSignedCert
+        /// </summary>
         public string CommonName { get; set; } = "SelfSignedCert";
-        public string? Organization { get; set;} = null;
-        public string? Locality { get; set; } = null;
-        public string? State { get; set;} = null;
-        public string? Country { get; set; } = null;
-        public string? Email { get; set;} = null;
-        public string? Address { get;set; } = null;
-        public string? PostalCode { get; set;} = null;
         
+        /// <summary>
+        /// Certificate Organization Name
+        /// This property is optional
+        /// </summary>
+        public string? Organization { get; set;} = null;
+        
+        /// <summary>
+        /// Certificate Organization Locality
+        /// This property is optional
+        /// </summary>
+        public string? Locality { get; set; } = null;
+
+        /// <summary>
+        /// Certificate Organization State
+        /// This property is optional
+        /// </summary>
+        public string? State { get; set;} = null;
+
+        /// <summary>
+        /// Certification Organization Country
+        /// This property is optional
+        /// </summary>
+        public string? Country { get; set; } = null;
+
+        /// <summary>
+        /// Certification Organization Email
+        /// This property is optional
+        /// </summary>
+        public string? Email { get; set;} = null;
+
+        /// <summary>
+        /// Certification Organization Street Address
+        /// This property is optional
+        /// </summary>
+        public string? Address { get;set; } = null;
+
+        /// <summary>
+        /// Certification Origanization Postal Code
+        /// This property is optional
+        /// </summary>
+        public string? PostalCode { get; set;} = null;
+
+        /// <summary>
+        /// Certification Initial validation DateTimeOffset Period
+        /// </summary>
+        public DateTimeOffset NotBefore { get; set; } = DateTimeOffset.UtcNow;
+
+        /// <summary>
+        /// Certification final validation DatetimeOffset Period
+        /// The certification doesn't work after this time
+        /// </summary>
+        public DateTimeOffset NotAfter { get; set; } = DateTimeOffset.UtcNow.AddYears(1);
+
+        /// <summary>
+        /// Default Certificate DistinguishedName 
+        /// This propoerty is created from the others properties
+        /// </summary>
         public string DistinguishedName
         {
             get
