@@ -15,12 +15,30 @@ namespace DAMSecurityLib.Certificates
     /// </summary>
     public class Autosigned
     {
-
+        /// <summary>
+        /// Generate Pfx  Certificate.
+        /// This Method generates pfx certificate with default info,
+        /// </summary>
+        /// <param name="certFileName">Pfx certificate file path</param>
+        /// <param name="certPassword">Pfx certificate password</param>
         public static void GeneratePfx(string certFileName, string? certPassword)
         {
+            CertificateInfo info = new CertificateInfo();
 
+            GeneratePfx(certFileName, certPassword, info);
+        }
+
+        /// <summary>
+        /// Generate Pfx certificate.
+        /// This method generates pfx certificates with CerticateInfo inside it. 
+        /// </summary>
+        /// <param name="certFileName">Pfx certificate file path</param>
+        /// <param name="certPassword">Pfx certifiate password</param>
+        /// <param name="info">Pfx certicicate info to display it</param>
+        public static void GeneratePfx(string certFileName, string? certPassword, CertificateInfo info)
+        {
             // Create a self-signed certificate 
-            X509Certificate2 certificate = CreateNew();
+            X509Certificate2 certificate = CreateNew(info);
 
             // Save certificate to a file   
             byte[] certBytes = certificate.Export(X509ContentType.Pfx, certPassword);
@@ -29,7 +47,12 @@ namespace DAMSecurityLib.Certificates
             File.WriteAllBytes(certFileName, certBytes);
         }
    
-        internal static X509Certificate2 CreateNew()
+        /// <summary>
+        /// Geneates certificate witohout saving to disk
+        /// </summary>
+        /// <param name="info">PFx certiciate info</param>
+        /// <returns>certificate object to work with it</returns>
+        internal static X509Certificate2 CreateNew(CertificateInfo info)
         {
             using (RSA rsa = RSA.Create())
             {
