@@ -24,6 +24,7 @@ namespace DAMSecurityLib.Crypto
 
         private X509Certificate2? certificate;
         private Pkcs12Store pkcs12Store = new Pkcs12StoreBuilder().Build();
+        private string storeAlias = "";
 
         #endregion
 
@@ -37,6 +38,14 @@ namespace DAMSecurityLib.Crypto
             certificate = new X509Certificate2(pfxFileName, pfxPassword);
 
             pkcs12Store.Load(new FileStream(pfxFileName, FileMode.Open, FileAccess.Read), pfxPassword.ToCharArray());
+            foreach (string currentAlias in pkcs12Store.Aliases)
+            {
+                if (pkcs12Store.IsKeyEntry(currentAlias))
+                {
+                    storeAlias = currentAlias;
+                    break;
+                }
+            }
         }
 
         /// <summary>
@@ -47,32 +56,16 @@ namespace DAMSecurityLib.Crypto
         /// <param name="outputFileName">Ouput pdf file path to save the result file</param>
         public void SignPdf(string inputFileName, string outputFileName)
         {
-            string testFileName = @"c:\test\test1.pdf";
-            string outTestFileName = @"c:\test\test1_sign2.pdf";
-            string storePath = @"c:\test\cert.pfx";
-            char[] storePass = "123456".ToCharArray();
-            string storeAlias = "";
+            AsymmetricKeyParameter key = pkcs12Store.GetKey(storeAlias).Key;
 
-            Pkcs12Store pkcs12 = new Pkcs12StoreBuilder().Build();
-            pkcs12.Load(new FileStream(storePath, FileMode.Open, FileAccess.Read), storePass);
-            foreach (string currentAlias in pkcs12.Aliases)
-            {
-                if (pkcs12.IsKeyEntry(currentAlias))
-                {
-                    storeAlias = currentAlias;
-                    break;
-                }
-            }
-            AsymmetricKeyParameter key = pkcs12.GetKey(storeAlias).Key;
-
-            X509CertificateEntry[] chainEntries = pkcs12.GetCertificateChain(storeAlias);
+            X509CertificateEntry[] chainEntries = pkcs12Store.GetCertificateChain(storeAlias);
             IX509Certificate[] chain = new IX509Certificate[chainEntries.Length];
             for (int i = 0; i < chainEntries.Length; i++)
                 chain[i] = new X509CertificateBC(chainEntries[i].Certificate);
             PrivateKeySignature signature = new PrivateKeySignature(new PrivateKeyBC(key), "SHA256");
 
-            using (PdfReader pdfReader = new PdfReader(testFileName))
-            using (FileStream result = File.Create(outTestFileName))
+            using (PdfReader pdfReader = new PdfReader(inputFileName))
+            using (FileStream result = File.Create(outputFileName))
             {
                 PdfSigner pdfSigner = new PdfSigner(pdfReader, result, new StampingProperties().UseAppendMode());
 
