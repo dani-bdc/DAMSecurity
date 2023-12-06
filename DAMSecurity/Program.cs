@@ -13,8 +13,8 @@ namespace DAMSecurity
         static void Main(string[] args)
         {
             //Autosigned.GeneratePfx("C:\\Users\\dmart126\\Downloads\\tmp\\cert.pfx", "123456");
-            
-            string originalFileName = Path.ChangeExtension(Path.GetTempFileName(), "pdf");
+            CertificateInfo.FromCertificate(@"C:\test\cert.pfx", "123456");
+            /*string originalFileName = Path.ChangeExtension(Path.GetTempFileName(), "pdf");
             string signedFileName = Path.ChangeExtension(Path.GetTempFileName(), "pdf");
 
             using (var writer = new PdfWriter(new FileStream( originalFileName, FileMode.Create, FileAccess.Write)))
@@ -31,7 +31,7 @@ namespace DAMSecurity
 
             new Sign().SignPdf(originalFileName, signedFileName);
             
-            Console.WriteLine($"Signed pdf file:{signedFileName}");
+            Console.WriteLine($"Signed pdf file:{signedFileName}");*/
         }
     }
 }

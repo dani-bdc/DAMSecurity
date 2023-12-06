@@ -86,35 +86,20 @@ namespace DAMSecurityLib.Certificates
                 string dn = $"CN={CommonName}";
 
                 if (Organization != null)
-                {
-                    dn += $",={Organization}";
-                }
+                    dn += $",O={Organization}";            
                 if (Locality != null)
-                {
                     dn += $", L={Locality}";
-
-                }
                 if (State != null)
-                {
                     dn += $", ST={State}";
-
-                }
                 if (Country != null)
-                {
                     dn += $", C={Country}";
-                }
                 if (Email!=null)
-                {
                     dn += $", Email={Email}";
-                }
                 if (Address != null)
-                {
                     dn += $", StreetAddress={Address}";
-                }
                 if (PostalCode != null)
-                {
                     dn += $", PostalCode={PostalCode}";
-                }
+
                 return dn;
             }
         }
@@ -128,8 +113,53 @@ namespace DAMSecurityLib.Certificates
         public static CertificateInfo FromCertificate(string certificatePath, string certificatePassword)
         {
             var certificate = new X509Certificate2(certificatePath, certificatePassword);
-            
-            return new CertificateInfo();
+            CertificateInfo info = new CertificateInfo();
+
+            info.CommonName = GetCertificateField(certificate.Subject, "CN=");
+            info.Organization = GetCertificateField(certificate.Subject, "O=");
+
+            info.Locality = GetCertificateField(certificate.Subject, "L=");
+            if (String.IsNullOrEmpty(info.Locality))
+                info.Locality = null;
+            info.State = GetCertificateField(certificate.Subject, "ST=");
+            if (String.IsNullOrEmpty(info.State))
+                info.State = null;
+            info.Country = GetCertificateField(certificate.Subject, "C=");
+            if (String.IsNullOrEmpty(info.Country)) 
+                info.Country = null;
+            info.Email = GetCertificateField(certificate.Subject, "Email=");
+            if (String.IsNullOrEmpty(info.Email)) 
+                info.Email = null;
+            info.Address = GetCertificateField(certificate.Subject, "StreetAddress=");
+            if (String.IsNullOrEmpty(info.Address)) 
+                info.Address = null;
+            info.PostalCode = GetCertificateField(certificate.Subject, "PostalCode=");
+            if (String.IsNullOrEmpty(info.PostalCode))
+                info.PostalCode = null;
+
+            return info;
+        }
+
+        /// <summary>
+        /// Gets certificated field from subject identified by fieldIdentifier
+        /// </summary>
+        /// <param name="subject">Subject to extract fieldIdentifier</param>
+        /// <param name="fieldIdentifier">Identifier field to extract</param>
+        /// <returns>Certificate Field</returns>
+        static string GetCertificateField(string subject, string fieldIdentifier)
+        {
+            int start = subject.IndexOf(fieldIdentifier);
+            if (start >= 0)
+            {
+                start += fieldIdentifier.Length;
+                int end = subject.IndexOf(',', start);
+                if (end == -1)
+                {
+                    end = subject.Length;
+                }
+                return subject.Substring(start, end - start).Trim();
+            }
+            return string.Empty;
         }
     }
 }
