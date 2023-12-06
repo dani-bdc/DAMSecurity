@@ -7,8 +7,6 @@ using System.Security.Cryptography.X509Certificates;
 using System.Security.Cryptography;
 using System.Security.Cryptography.Xml;
 using System.Security.Cryptography.Pkcs;
-using iText.Kernel.Pdf;
-using iText.Signatures;
 
 namespace DAMSecurityLib.Certificates
 {
@@ -20,18 +18,15 @@ namespace DAMSecurityLib.Certificates
 
         public static void GeneratePfx(string certFileName, string? certPassword)
         {
-            using (RSA rsa = RSA.Create())
-            {
 
-                // Create a self-signed certificate 
-                X509Certificate2 certificate = CreateNew();
+            // Create a self-signed certificate 
+            X509Certificate2 certificate = CreateNew();
 
-                // Save certificate to a file   
-                byte[] certBytes = certificate.Export(X509ContentType.Pfx, certPassword);
-                // Falta guardar els bytes en un fitxer amb el nom indicat
-                File.WriteAllBytes(certFileName, certBytes);
+            // Save certificate to a file   
+            byte[] certBytes = certificate.Export(X509ContentType.Pfx, certPassword);
 
-            }
+            // Save cert bytes to a file
+            File.WriteAllBytes(certFileName, certBytes);
         }
    
         internal static X509Certificate2 CreateNew()
@@ -51,37 +46,6 @@ namespace DAMSecurityLib.Certificates
                 return certificate;
             }
          
-        }
-
-        public static void SignPdfWithNewCertificate(string inputFileName, string outFileName)
-        {
-            
-            X509Certificate2 certificate = Autosigned.CreateNew();
-            using(PdfReader pdfReader = new PdfReader(inputFileName))
-            {
-                using (FileStream outputStream = new FileStream(outFileName, FileMode.Create))
-                {
-                    using (PdfWriter pdfWriter = new PdfWriter(outputStream))
-                    {
-
-                    }
-                }
-            }
-            byte[] input = File.ReadAllBytes(inputFileName);
-            byte[] output = Sign(certificate, input);
-            File.WriteAllBytes(outFileName, output);
-        }
-
-        public static byte[] Sign(X509Certificate2 certificate, byte[]document)
-        {
-            ContentInfo contentInfo = new ContentInfo(document);
-            SignedCms signedCms = new SignedCms(contentInfo, true);
-            CmsSigner signer = new CmsSigner(SubjectIdentifierType.IssuerAndSerialNumber, certificate);
-            signedCms.ComputeSignature(signer);
-
-            return signedCms.Encode();
-        }
-
-
+        }   
     }
 }

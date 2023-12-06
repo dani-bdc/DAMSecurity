@@ -1,5 +1,6 @@
 ﻿
 using DAMSecurityLib.Certificates;
+using DAMSecurityLib.Crypto;
 using iText.Kernel.Pdf;
 using iText.Layout;
 using iText.Layout.Element;
@@ -11,6 +12,8 @@ namespace DAMSecurity
     {
         static void Main(string[] args)
         {
+            //Autosigned.GeneratePfx("C:\\Users\\dmart126\\Downloads\\tmp\\cert.pfx", "123456");
+            
             string originalFileName = Path.ChangeExtension(Path.GetTempFileName(), "pdf");
             string signedFileName = Path.ChangeExtension(Path.GetTempFileName(), "pdf");
 
@@ -26,8 +29,8 @@ namespace DAMSecurity
 
             Console.WriteLine($"Original pdf file:{originalFileName}");
 
-            Autosigned.SignPdfWithNewCertificate(originalFileName, signedFileName);
-
+            new Sign().SignPdf(originalFileName, signedFileName);
+            
             Console.WriteLine($"Signed pdf file:{signedFileName}");
         }
     }
