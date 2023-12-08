@@ -10,7 +10,8 @@ using iText.Bouncycastle.Crypto;
 using iText.Bouncycastle.X509;
 using iText.Commons.Bouncycastle.Cert;
 using Org.BouncyCastle.Crypto;
-
+using System.Security.Cryptography;
+using System.Text;
 
 namespace DAMSecurityLib.Crypto
 {
@@ -86,6 +87,24 @@ namespace DAMSecurityLib.Crypto
                 byte[] outputBytes = SignDocument(certificate, inputBytes);
 
                 File.WriteAllBytes(outputFileName, outputBytes);
+            }
+        }
+
+        /// <summary>
+        /// Returns SHA-256 HASH from input byte array
+        /// </summary>
+        /// <param name="input">Input byte array to obtain SHA-256 HASH</param>
+        /// <returns>SHA-256 HASH</returns>
+        public string SHA256Hash(byte[] input)
+        {
+            using (SHA256 sHA256 = SHA256.Create())
+            {
+                StringBuilder builder = new StringBuilder();
+                for (int i = 0; i < input.Length; i++)
+                {
+                    builder.Append(input[i].ToString("x2"));
+                }
+                return builder.ToString();
             }
         }
 
