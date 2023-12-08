@@ -1,6 +1,7 @@
 ﻿using System.Security.Cryptography.X509Certificates;
 using System.Security.Cryptography;
-
+using Org.BouncyCastle.Tls;
+using Org.BouncyCastle.Asn1.X509;
 
 namespace DAMSecurityLib.Certificates
 {
@@ -40,7 +41,20 @@ namespace DAMSecurityLib.Certificates
             // Save cert bytes to a file
             File.WriteAllBytes(certFileName, certBytes);
         }
-   
+
+        /// <summary>
+        /// Obtanir public key info string accordint to certificate stored in disx
+        /// </summary>
+        /// <param name="pfxFileName">Certificate Filsesystem path</param>
+        /// <param name="pfxPassword">Certificate password</param>
+        /// <returns>string representing public key info</returns>
+        public static string PublicKeyInfo(string pfxFileName, string? pfxPassword)
+        {
+            var certificate = new X509Certificate2(pfxFileName, pfxPassword);
+            byte[] publicKeyInfoBytes = certificate.Export(X509ContentType.Cert);
+            return Convert.ToBase64String(publicKeyInfoBytes);
+        }
+
         /// <summary>
         /// Geneates certificate witohout saving to disk
         /// </summary>
