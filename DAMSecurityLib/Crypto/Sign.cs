@@ -12,6 +12,10 @@ using iText.Commons.Bouncycastle.Cert;
 using Org.BouncyCastle.Crypto;
 using System.Security.Cryptography;
 using System.Text;
+using iText.Kernel.Geom;
+using iText.Forms.Fields.Properties;
+using iText.Forms.Form.Element;
+using System.Runtime.CompilerServices;
 
 namespace DAMSecurityLib.Crypto
 {
@@ -24,6 +28,7 @@ namespace DAMSecurityLib.Crypto
         #region Private attributes
 
         private X509Certificate2? certificate;
+        private Certificates.CertificateInfo? certificateInfo;
         private Pkcs12Store pkcs12Store = new Pkcs12StoreBuilder().Build();
         private string storeAlias = "";
 
@@ -47,6 +52,7 @@ namespace DAMSecurityLib.Crypto
                     break;
                 }
             }
+            certificateInfo = Certificates.CertificateInfo.FromCertificate(pfxFileName,pfxPassword);
         }
 
         /// <summary>
@@ -55,7 +61,8 @@ namespace DAMSecurityLib.Crypto
         /// </summary>
         /// <param name="inputFileName">Input pdf file path to sign</param>
         /// <param name="outputFileName">Ouput pdf file path to save the result file</param>
-        public void SignPdf(string inputFileName, string outputFileName)
+        /// <param name="showSignature">If signatature is visible in pdf document</param>
+        public void SignPdf(string inputFileName, string outputFileName, bool showSignature)
         {
             AsymmetricKeyParameter key = pkcs12Store.GetKey(storeAlias).Key;
 
@@ -69,6 +76,11 @@ namespace DAMSecurityLib.Crypto
             using (FileStream result = File.Create(outputFileName))
             {
                 PdfSigner pdfSigner = new PdfSigner(pdfReader, result, new StampingProperties().UseAppendMode());
+
+                if (showSignature)
+                {
+                    CreateSignatureApperanceField(pdfSigner);
+                }
 
                 pdfSigner.SignDetached(signature, chain, null, null, null, 0, PdfSigner.CryptoStandard.CMS);
             }
@@ -124,6 +136,33 @@ namespace DAMSecurityLib.Crypto
             return signedCms.Encode();
         }
 
-        
+        /// <summary>
+        /// Adds signature field rectangle inside pdf document
+        /// </summary>
+        /// <param name="pdfSigner">PdfSigner used to sign document</param>
+        internal void CreateSignatureApperanceField(PdfSigner pdfSigner)
+        {
+            var pdfDocument = pdfSigner.GetDocument();
+            var pageRect = pdfDocument.GetPage(1).GetPageSize();
+            var size = new PageSize(pageRect);
+            pdfDocument.AddNewPage(size);
+            var totalPages = pdfDocument.GetNumberOfPages();
+            float yPos = pdfDocument.GetPage(totalPages).GetPageSize().GetHeight() - 100;
+            float xPos = 0;
+            Rectangle rect = new Rectangle(xPos, yPos, 200, 100);
+
+            pdfSigner.SetFieldName("signature");
+
+            SignatureFieldAppearance appearance = new SignatureFieldAppearance(pdfSigner.GetFieldName())
+                    .SetContent(new SignedAppearanceText()
+                        .SetSignedBy(certificateInfo?.Organization)
+                        .SetReasonLine("" + " - " + "")
+                        .SetLocationLine("Location: " + certificateInfo?.Locality)
+                        .SetSignDate(pdfSigner.GetSignDate()));
+
+            pdfSigner.SetPageNumber(totalPages).SetPageRect(rect)
+                    .SetSignatureAppearance(appearance);
+
+        }
     }
 }
