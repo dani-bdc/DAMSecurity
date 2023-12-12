@@ -85,6 +85,20 @@ namespace DAMSecurityLib.Crypto
             }
                 
         }
-    
+
+        public static byte[] DecryptAESKeyWithPrivateKey(byte[] encrypteKey, X509Certificate2 certificate)
+        {
+            using (RSA? rsa = certificate.GetRSAPrivateKey())
+            {
+                byte[] aesKey;
+                if (rsa != null)
+                    aesKey = rsa.Decrypt(encrypteKey, RSAEncryptionPadding.OaepSHA256);
+                else
+                    aesKey = new byte[0];
+                return aesKey;
+
+            }
+            
+        }
     }
 }
