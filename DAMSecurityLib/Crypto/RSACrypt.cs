@@ -10,6 +10,12 @@ namespace DAMSecurityLib.Crypto
 {
     public class RSACrypt
     {
+        /// <summary>
+        /// Save certificate public key to a file on disk
+        /// </summary>
+        /// <param name="pfxFilename">Pfx file path to extract public key</param>
+        /// <param name="pfxPassword">Pfx password</param>
+        /// <param name="publicKeyFile">File path to store certificate public key</param>
         public static void SavePublicKey(string pfxFilename, string pfxPassword, string publicKeyFile)
         {
             X509Certificate2 certificate = new X509Certificate2(pfxFilename, pfxPassword);
@@ -21,6 +27,11 @@ namespace DAMSecurityLib.Crypto
             }
         }
 
+        /// <summary>
+        /// Load Certificate public key stored in disk
+        /// </summary>
+        /// <param name="publicKeyFile">Public path file path</param>
+        /// <returns>RSA certificate with public key</returns>
         public static RSA LoadPublicKey(string publicKeyFile)
         {
             RSAParameters publicKeyParams = new RSAParameters();
@@ -39,7 +50,12 @@ namespace DAMSecurityLib.Crypto
             return rsa;
         }
 
-        static void SavePublicKey(RSA publicKey, string publicKeyFile)
+        /// <summary>
+        /// Save RSA Public key to a file
+        /// </summary>
+        /// <param name="publicKey">RSA Public key to store in disk</param>
+        /// <param name="publicKeyFile">Filesystem file path to store public key</param>
+        public static void SavePublicKey(RSA publicKey, string publicKeyFile)
         {
             RSAParameters publickeyParams = publicKey.ExportParameters(false);
             using (StreamWriter writer = new StreamWriter(publicKeyFile))
@@ -52,5 +68,23 @@ namespace DAMSecurityLib.Crypto
                     writer.WriteLine(Convert.ToBase64String(exponent));
             }
         }
+   
+        /// <summary>
+        /// Encrypt AESKey with RSA public key
+        /// </summary>
+        /// <param name="aesKey">AES Key to encrypt</param>
+        /// <param name="publicKey">RSA public key to encrypt with</param>
+        /// <returns>Encrypted AES key</returns>
+        public static byte[] EncryptAESKey(byte[] aesKey, RSAParameters publicKey)
+        {
+            using (RSA rsa = RSA.Create())
+            {
+                rsa.ImportParameters(publicKey);
+                byte[] encryptedAesKey = rsa.Encrypt(aesKey, RSAEncryptionPadding.OaepSHA256);
+                return encryptedAesKey;
+            }
+                
+        }
+    
     }
 }
