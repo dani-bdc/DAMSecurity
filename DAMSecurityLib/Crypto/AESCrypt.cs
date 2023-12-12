@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace DAMSecurityLib.Crypto
 {
-    internal class AESCrypt
+    public class AESCrypt
     {
         private Aes aes;
 
