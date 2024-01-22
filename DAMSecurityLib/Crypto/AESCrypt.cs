@@ -53,6 +53,19 @@ namespace DAMSecurityLib.Crypto
         }
 
         /// <summary>
+        /// Generate IV 
+        /// </summary>
+        public void GenerateIV()
+        {
+            byte[] ivBytes = new byte[16];
+            for (int i=0;i<16;i++)
+            {
+                ivBytes[i] = aes.Key[i];
+            }
+            aes.IV = ivBytes;   
+        }
+
+        /// <summary>
         /// Encrypte byte data using Aes and returns encrypted value
         /// </summary>
         /// <param name="bytes">byte[] to encrypt</param>
@@ -66,9 +79,11 @@ namespace DAMSecurityLib.Crypto
             {
                 using (CryptoStream cs = new CryptoStream(ms, ct, CryptoStreamMode.Write))
                 {
+                   
                     cs.Write(bytes, 0, bytes.Length);
-                    encryptedData = ms.ToArray();
+                    
                 }
+                encryptedData = ms.ToArray();
             }
 
             return encryptedData;
