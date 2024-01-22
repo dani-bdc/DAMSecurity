@@ -8,6 +8,9 @@ using System.Threading.Tasks;
 
 namespace DAMSecurityLib.Crypto
 {
+    /// <summary>
+    /// Class with some utilities to Encrypt/Decrypt using RSA algorithn
+    /// </summary>
     public class RSACrypt
     {
         /// <summary>
@@ -86,6 +89,12 @@ namespace DAMSecurityLib.Crypto
                 
         }
 
+        /// <summary>
+        /// Decrypt AES key encryted with RSA algorithm
+        /// </summary>
+        /// <param name="encrypteKey">Encrypted key to decrypt</param>
+        /// <param name="certificate">Certificate used to decrypt</param>
+        /// <returns>byte[] corresponding to decrypted key</returns>
         public static byte[] DecryptAESKeyWithPrivateKey(byte[] encrypteKey, X509Certificate2 certificate)
         {
             using (RSA? rsa = certificate.GetRSAPrivateKey())

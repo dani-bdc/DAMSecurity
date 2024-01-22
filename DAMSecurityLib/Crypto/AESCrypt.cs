@@ -7,6 +7,9 @@ using System.Threading.Tasks;
 
 namespace DAMSecurityLib.Crypto
 {
+    /// <summary>
+    /// Class used to encrypt/decrypt using aES alghorithm
+    /// </summary>
     public class AESCrypt
     {
         #region Private attributes
@@ -50,6 +53,28 @@ namespace DAMSecurityLib.Crypto
         }
 
         /// <summary>
+        /// Encrypte byte data using Aes and returns encrypted value
+        /// </summary>
+        /// <param name="bytes">byte[] to encrypt</param>
+        /// <returns>byte[] corresponding to encrypted data</returns>
+        public byte[] Encrypt(byte[] bytes)
+        {
+            ICryptoTransform ct = aes.CreateEncryptor();
+            byte[] encryptedData;
+
+            using (MemoryStream ms = new MemoryStream())
+            {
+                using (CryptoStream cs = new CryptoStream(ms, ct, CryptoStreamMode.Write))
+                {
+                    cs.Write(bytes, 0, bytes.Length);
+                    encryptedData = ms.ToArray();
+                }
+            }
+
+            return encryptedData;
+        }
+
+        /// <summary>
         /// Encrypts text and returns encrypted value
         /// </summary>
         /// <param name="text">Text to encrypt</param>
@@ -72,6 +97,29 @@ namespace DAMSecurityLib.Crypto
             }
 
             return encryptedData;
+        }
+        
+        /// <summary>
+        /// Decrypts input data and returns decrypted value
+        /// </summary>
+        /// <param name="encryptedData">Data to decrypt</param>
+        /// <returns>byte[] corresponding to decrypted data</returns>
+        public byte[] Decrypt(byte[] encryptedData)
+        {
+            ICryptoTransform decryptor = aes.CreateDecryptor();
+            byte[] decryptedData;
+            using (MemoryStream ms = new MemoryStream(encryptedData))
+            {
+                using (CryptoStream cs = new CryptoStream(ms, decryptor, CryptoStreamMode.Read))
+                {
+                    using (MemoryStream msDecrypt = new MemoryStream())
+                    {
+                        cs.CopyTo(msDecrypt);
+                        decryptedData = msDecrypt.ToArray(); 
+                    }
+                }
+            }
+            return decryptedData;
         }
 
         /// <summary>

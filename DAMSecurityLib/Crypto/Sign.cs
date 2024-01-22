@@ -81,7 +81,7 @@ namespace DAMSecurityLib.Crypto
                 {
                     CreateSignatureApperanceField(pdfSigner);
                 }
-
+                
                 pdfSigner.SignDetached(signature, chain, null, null, null, 0, PdfSigner.CryptoStandard.CMS);
             }
         }

@@ -4,7 +4,9 @@ using DAMSecurityLib.Crypto;
 using iText.Kernel.Pdf;
 using iText.Layout;
 using iText.Layout.Element;
+using Org.BouncyCastle.Asn1.X509;
 using System.Collections.Specialized;
+using System.Security.Cryptography.X509Certificates;
 
 namespace DAMSecurity
 {
@@ -12,26 +14,21 @@ namespace DAMSecurity
     {
         static void Main(string[] args)
         {
-            //Autosigned.GeneratePfx("C:\\Users\\dmart126\\Downloads\\tmp\\cert.pfx", "123456");
-            CertificateInfo.FromCertificate(@"C:\test\cert.pfx", "123456");
-            /*string originalFileName = Path.ChangeExtension(Path.GetTempFileName(), "pdf");
-            string signedFileName = Path.ChangeExtension(Path.GetTempFileName(), "pdf");
+            DAMSecurityLib.Crypto.RSACrypt.SavePublicKey(@"c:\test\cert.pfx", "123456", @"c:\test\publik.key");
 
-            using (var writer = new PdfWriter(new FileStream( originalFileName, FileMode.Create, FileAccess.Write)))
-            {
-                using (var pdf = new PdfDocument(writer))
-                {
-                    Document document = new Document(pdf);
-                    document.Add(new Paragraph("Pdf sample "));
-                    document.Close();
-                }
-            }
-
-            Console.WriteLine($"Original pdf file:{originalFileName}");
-
-            new Sign().SignPdf(originalFileName, signedFileName);
+            var cert = new X509Certificate2(@"c:\test\cert.pfx", "123456");
+            var pk = DAMSecurityLib.Crypto.RSACrypt.LoadPublicKey(@"c:\test\publik.key").ExportParameters(false);
             
-            Console.WriteLine($"Signed pdf file:{signedFileName}");*/
+
+            var aes = new DAMSecurityLib.Crypto.AESCrypt();
+            var aesKey = aes.Key;
+
+            var encryptedKey = DAMSecurityLib.Crypto.RSACrypt.EncryptAESKey(aesKey, pk);
+
+            var newKey=DAMSecurityLib.Crypto.RSACrypt.DecryptAESKeyWithPrivateKey(encryptedKey, cert);
+
+            Console.WriteLine("Final");
+
         }
     }
 }
