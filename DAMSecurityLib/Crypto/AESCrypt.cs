@@ -53,10 +53,12 @@ namespace DAMSecurityLib.Crypto
         }
 
         /// <summary>
-        /// Generate IV 
+        /// Generate IV (Initialization Vector)
+        /// We need to use this function only if we want generate IV vector from key. If we want a randon IV vector we must not use this function
         /// </summary>
         public void GenerateIV()
         {
+            // Generate IV vector from key
             byte[] ivBytes = new byte[16];
             for (int i=0;i<16;i++)
             {
