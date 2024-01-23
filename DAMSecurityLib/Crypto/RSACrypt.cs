@@ -1,5 +1,6 @@
 ﻿using DAMSecurityLib.Data;
 using DAMSecurityLib.Exceptions;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -74,6 +75,32 @@ namespace DAMSecurityLib.Crypto
             }
         }
    
+        /// <summary>
+        /// Extract RSA Public key and converts it to byte[]
+        /// </summary>
+        /// <param name="rsa">RSA to extract public key</param>
+        /// <returns>byte[] corresponding to public key</returns>
+        public static byte[] PublicKey(RSA rsa)
+        {
+            RSAParameters publickeyParams = rsa.ExportParameters(false);
+            string json = JsonConvert.SerializeObject(publickeyParams);
+            return Encoding.UTF8.GetBytes(json);            
+        }
+
+        /// <summary>
+        /// Create RSAParametres from byte array
+        /// </summary>
+        /// <param name="publickey">Byte[] to convert</param>
+        /// <returns>RSAParameters associated to input</returns>
+        public static RSAParameters LoadPublicKey(byte[] publickey)
+        {
+            string json = Encoding.UTF8.GetString(publickey);
+            RSAParameters parameters = JsonConvert.DeserializeObject<RSAParameters>(json);
+
+            return parameters;
+
+        }
+
         /// <summary>
         /// Encrypt AESKey with RSA public key
         /// </summary>
