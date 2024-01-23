@@ -1,4 +1,6 @@
-﻿using System;
+﻿using DAMSecurityLib.Data;
+using DAMSecurityLib.Exceptions;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Cryptography;
@@ -108,6 +110,44 @@ namespace DAMSecurityLib.Crypto
 
             }
             
+        }
+
+        /// <summary>
+        /// Encrypt file using publicKey
+        /// </summary>
+        /// <param name="publicKey">PublicKey used to encript file</param>
+        /// <param name="file">Byte[] representing file to encript</param>
+        /// <returns>KeyFilePair withe key encripted in RSA and byte[] corresponding to file encripted with AES Key</returns>
+        public static KeyFilePair Encrypt(RSAParameters publicKey, byte[] file)
+        {
+            KeyFilePair keyFilePair = new KeyFilePair();
+            var aes = new DAMSecurityLib.Crypto.AESCrypt();
+            aes.GenerateIV();
+            var aesKey = aes.Key;
+
+            keyFilePair.Key = DAMSecurityLib.Crypto.RSACrypt.EncryptAESKey(aesKey, publicKey);
+            keyFilePair.File = aes.Encrypt(file);
+            
+            return keyFilePair;
+        }
+
+        /// <summary>
+        /// Decrypt file encripted with rSA
+        /// </summary>
+        /// <param name="keyFilePair">KeyFilePair with encripted information</param>
+        /// <param name="certificate">Certificate used to decript</param>
+        /// <returns>byte[] corresponding to decripted file</returns>
+        /// <exception cref="IncorrectParametersException"></exception>
+        public static byte[] Decrypt(KeyFilePair keyFilePair, X509Certificate2 certificate)
+        {
+            if ((keyFilePair.Key == null) || (keyFilePair.File == null))
+                throw new IncorrectParametersException("Incorrect decrypt KeyFilePair");
+
+            byte[] aeskey = DecryptAESKeyWithPrivateKey(keyFilePair.Key, certificate);
+            AESCrypt aes = new AESCrypt();
+            aes.Key = aeskey;
+            aes.GenerateIV();
+            return aes.Decrypt(keyFilePair.File);            
         }
     }
 }
