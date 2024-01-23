@@ -17,12 +17,12 @@ namespace DAMSecurityLib.Data
         /// <summary>
         /// Byte array associated with the Key
         /// </summary>
-        public byte[]? Key { get; set; }
+        public byte[] Key { get; set; } = new byte[0];
 
         /// <summary>
         /// Byte array associated with the File
         /// </summary>
-        public byte[]? File { get; set; }
+        public byte[] File { get; set; } = new byte[0];
 
         /// <summary>
         /// Serialize current object to Json String
@@ -50,5 +50,32 @@ namespace DAMSecurityLib.Data
             return obj;
         }
 
+        /// <summary>
+        /// Checks if 2 KeyFilePair objects are equals
+        /// </summary>
+        /// <param name="obj">KeyFilePair to compare</param>
+        /// <returns>If 2 objects are equals</returns>
+        public override bool Equals(object? obj)
+        {
+            if (obj == null)
+                return false;
+            if (obj is KeyFilePair)
+            {
+                var keyFilePair = (KeyFilePair)obj;
+                return (keyFilePair.Key.SequenceEqual(this.Key) && keyFilePair.File.SequenceEqual(this.File));
+            }
+            else
+                return false;
+            
+        }
+
+        /// <summary>
+        /// Gets hash code of the current object
+        /// </summary>
+        /// <returns>Hash code of the current object</returns>
+        public override int GetHashCode()
+        {
+            return base.GetHashCode();
+        }
     }
 }
