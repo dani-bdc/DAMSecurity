@@ -9,7 +9,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DAMSecurityLib", "DAMSecuri
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DAMSecurityGUI", "DAMSecurityGUI\DAMSecurityGUI.csproj", "{E880C909-3357-4E19-8722-648BD039927B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DAMSecurityTest", "DAMSecurityTest\DAMSecurityTest.csproj", "{BF02E224-2A62-4DA6-8E1E-6F244A525DF1}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DAMSecurityTest", "DAMSecurityTest\DAMSecurityTest.csproj", "{BF02E224-2A62-4DA6-8E1E-6F244A525DF1}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DAMUtils", "DAMUtils\DAMUtils.csproj", "{63D5E319-F8B4-4A3C-936D-DDBF2C994CB4}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -33,6 +35,10 @@ Global
 		{BF02E224-2A62-4DA6-8E1E-6F244A525DF1}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{BF02E224-2A62-4DA6-8E1E-6F244A525DF1}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{BF02E224-2A62-4DA6-8E1E-6F244A525DF1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{63D5E319-F8B4-4A3C-936D-DDBF2C994CB4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{63D5E319-F8B4-4A3C-936D-DDBF2C994CB4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{63D5E319-F8B4-4A3C-936D-DDBF2C994CB4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{63D5E319-F8B4-4A3C-936D-DDBF2C994CB4}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
