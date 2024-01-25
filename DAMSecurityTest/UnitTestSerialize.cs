@@ -46,6 +46,41 @@ namespace DAMSecurityTest
         }
 
         [Test]
+        public void TestKeyIVPairSerialize()
+        {
+            KeyIVPair pair = new KeyIVPair();
+            AESCrypt aES = new AESCrypt();
+
+            pair.Key = aES.Key;
+            pair.IV = aES.IV;
+            var str = pair.Serialize();
+
+            KeyIVPair newPair = KeyIVPair.Deserialize(str);
+            if (pair.Key == null || newPair.Key == null || pair.IV == null || newPair.IV == null)
+            {
+                Assert.IsTrue(false);
+                return;
+            }
+
+            Assert.That(pair.Key.SequenceEqual(newPair.Key));
+            Assert.That(pair.IV.SequenceEqual(newPair.IV));
+        }
+
+        [Test]
+        public void TestKeyIVPairEquals()
+        {
+            KeyIVPair pair = new KeyIVPair();
+            AESCrypt aES = new AESCrypt();
+
+            pair.Key = aES.Key;
+            pair.IV = aES.IV;
+            var str = pair.Serialize();
+
+            KeyIVPair newPair = KeyIVPair.Deserialize(str);
+            Assert.IsTrue(pair.Equals(newPair));
+        }
+
+        [Test]
         public void TestObjectPairSerialize1()
         {
             ObjectPair objPair = new ObjectPair();
