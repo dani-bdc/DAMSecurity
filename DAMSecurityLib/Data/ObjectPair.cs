@@ -24,6 +24,25 @@ namespace DAMSecurityLib.Data
         public object? Obj2 { get; set; }
 
         /// <summary>
+        /// Default constructor
+        /// </summary>
+        public ObjectPair()
+        {
+
+        }
+
+        /// <summary>
+        /// Initialize object with default values
+        /// </summary>
+        /// <param name="obj1">Object1 initial value</param>
+        /// <param name="obj2">Object2 initial value</param>
+        public ObjectPair(object? obj1, object? obj2)
+        {
+            Obj1 = obj1;
+            Obj2 = obj2;
+        }
+
+        /// <summary>
         /// Serialize current object to Json String
         /// </summary>
         /// <returns>Json string corresponding to current object</returns>
@@ -31,7 +50,6 @@ namespace DAMSecurityLib.Data
         {
             return JsonConvert.SerializeObject(this);
         }
-
 
         /// <summary>
         /// Deserialize json string and convert it to KeyFilePairObject

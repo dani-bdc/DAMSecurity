@@ -55,18 +55,11 @@ namespace DAMUtils.Socket
                 var client = listener.AcceptTcpClient();
 
                 NetworkStream stream = client.GetStream();
-                byte[] buffer = new byte[4096];
-                int bytesRead;
-                StringBuilder receivedData = new StringBuilder();
-
-                // Receive data from client
-                while ((bytesRead = stream.Read(buffer, 0, buffer.Length)) > 0)
-                {
-                    receivedData.Append(Encoding.UTF8.GetString(buffer, 0, bytesRead));
-                }
+                var str = Utils.ReadToString(stream);
+                
                 // pair.Obj1 contains report name to generate
                 // pair.Obj2 contains client Public Key
-                ObjectPair pair = ObjectPair.Deserialize(receivedData.ToString());
+                ObjectPair pair = ObjectPair.Deserialize(str);
 
                 // Generate pdf 
                 byte[] pdfBytes;

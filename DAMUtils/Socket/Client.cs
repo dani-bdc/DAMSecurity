@@ -47,32 +47,23 @@ namespace DAMUtils.Socket
         public byte[] Process(string reportName, X509Certificate2 certificate)
         {
             TcpClient tcpClient = new TcpClient(address, port);
-            ObjectPair objectPair = new ObjectPair();
 
-            var cPk = certificate.GetRSAPublicKey();
-            var publicKey = cPk?.ExportParameters(false);
-            
-            objectPair.Obj1 = reportName;
-            objectPair.Obj2 = publicKey;
+            var publicKey = certificate.GetRSAPublicKey()?.ExportParameters(false);
 
+            var objectPair = new ObjectPair(reportName, publicKey);
             var objectStr = objectPair.Serialize();
             var objectBytes = Encoding.UTF8.GetBytes(objectStr);
 
-            // Send parameters to server
             NetworkStream stream = tcpClient.GetStream();
+
+            // Send parameters to server
             stream.Write(objectBytes, 0, objectBytes.Length);
 
             // Wait for server response
-            byte[] buffer = new byte[4096];
-            StringBuilder responseData = new StringBuilder();
-            int bytesRead;
-            while ((bytesRead = stream.Read(buffer, 0, buffer.Length)) > 0)
-            {
-                responseData.Append(Encoding.UTF8.GetString(buffer, 0, bytesRead));
-            }
+            var str = Utils.ReadToString(stream);
 
             // Deserialize response and decrypt it
-            KeyFilePair response = KeyFilePair.Deserialize(responseData.ToString());
+            KeyFilePair response = KeyFilePair.Deserialize(str);
             byte[] finalBytes = Hybrid.Decrypt(certificate, response);
 
             // Close stream and socket connection
