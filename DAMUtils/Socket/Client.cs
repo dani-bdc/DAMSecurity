@@ -1,10 +1,13 @@
-﻿using DAMSecurityLib.Data;
+﻿using DAMSecurityLib.Crypto;
+using DAMSecurityLib.Data;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Sockets;
+using System.Security.Cryptography;
+using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -35,12 +38,17 @@ namespace DAMUtils.Socket
             this.port = port;
         }
 
-        public void Process()
+        public byte[] Process(string reportName, X509Certificate2 certificate)
         {
             TcpClient tcpClient = new TcpClient(address, port);
 
             ObjectPair objectPair = new ObjectPair();
+            var cPk = certificate.GetRSAPublicKey();
+            var publicKey = cPk?.ExportParameters(false);
+            objectPair.Obj1 = reportName;
+            objectPair.Obj2 = publicKey;
             var objectStr = objectPair.Serialize();
+
             var objectBytes = Encoding.UTF8.GetBytes(objectStr);
 
             NetworkStream stream = tcpClient.GetStream();
@@ -55,10 +63,12 @@ namespace DAMUtils.Socket
                 responseData.Append(Encoding.UTF8.GetString(buffer, 0, bytesRead));
             }
             KeyFilePair response = KeyFilePair.Deserialize(responseData.ToString());
-            
+            byte[] finalBytes = Hybrid.Decrypt(certificate, response);
+
             stream.Close();
             tcpClient.Close();
 
+            return finalBytes;
         }
     }
 }

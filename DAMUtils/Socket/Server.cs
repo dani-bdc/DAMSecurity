@@ -1,6 +1,7 @@
 ﻿using DAMSecurityLib.Crypto;
 using DAMSecurityLib.Data;
 using DAMUtils.PDF;
+using DAMUtils.PDF.Fake;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -19,6 +20,7 @@ namespace DAMUtils.Socket
         private int port;
         private IPAddress address;
         private TcpListener? listener;
+        public PDF.IPDFGenerator PdfGenerator { get; set; } = new FakePDFGenerator();
 
         /// <summary>
         /// Construct socket server with default values
@@ -59,7 +61,17 @@ namespace DAMUtils.Socket
                 receivedData.Append(Encoding.UTF8.GetString(buffer, 0, bytesRead));
             }
             ObjectPair pair = ObjectPair.Deserialize(receivedData.ToString());
-            KeyFilePair kfp = new KeyFilePair();
+            byte[] pdfBytes;
+            if (pair != null && pair.Obj1 != null)
+                pdfBytes = PdfGenerator.Generate(pair.Obj1);
+            else
+                pdfBytes=new byte[0];
+            KeyFilePair kfp;
+            if (pair != null && pair.Obj2 != null)
+                kfp = Hybrid.Crypt((RSAParameters)pair.Obj2, pdfBytes);
+            else
+                kfp = new KeyFilePair();
+            
             var json = kfp.Serialize();
             var sendBytes = Encoding.UTF8.GetBytes(json);
             stream.Write(sendBytes, 0, sendBytes.Length);
