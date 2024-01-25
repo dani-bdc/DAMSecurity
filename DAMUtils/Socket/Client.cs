@@ -41,7 +41,7 @@ namespace DAMUtils.Socket
         /// <summary>
         /// Sends data to the server and returns decrypted pdf
         /// </summary>
-        /// <param name="reportName">Retport to generate</param>
+        /// <param name="reportName">Report to generate</param>
         /// <param name="certificate">Certificate used to encrypt/decrupt</param>
         /// <returns>byte[] corresponding to decrypted pdf</returns>
         public byte[] Process(string reportName, X509Certificate2 certificate)
