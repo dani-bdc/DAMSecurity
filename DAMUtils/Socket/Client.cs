@@ -1,6 +1,5 @@
 ﻿using DAMSecurityLib.Data;
 using Newtonsoft.Json;
-using Org.BouncyCastle.Utilities.Net;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,7 +13,7 @@ namespace DAMUtils.Socket
     public class Client
     {
         private int port;
-        private IPAddress address;
+        private string address;
 
         /// <summary>
         /// Construct socket client with default values
@@ -22,7 +21,7 @@ namespace DAMUtils.Socket
         public Client()
         {
             port = 1234;
-            address = IPAddress.Any;
+            address = "localhost";
         }
 
         /// <summary>
@@ -30,7 +29,7 @@ namespace DAMUtils.Socket
         /// </summary>
         /// <param name="address">Socket's address</param>
         /// <param name="port">Socket's port</param>
-        public Client(IPAddress address, int port)
+        public Client(string address, int port)
         {
             this.address = address;
             this.port = port;
