@@ -65,7 +65,7 @@ namespace DAMSecurityTest
         {
             createPublicKeyFile();
             var pk = DAMSecurityLib.Crypto.RSACrypt.LoadPublicKey(publicKeyFileName).ExportParameters(false);
-
+                
 
             var aes = new DAMSecurityLib.Crypto.AESCrypt();
             var aesKey = aes.Key;

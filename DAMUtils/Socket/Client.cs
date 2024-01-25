@@ -75,9 +75,11 @@ namespace DAMUtils.Socket
             KeyFilePair response = KeyFilePair.Deserialize(responseData.ToString());
             byte[] finalBytes = Hybrid.Decrypt(certificate, response);
 
+            // Close stream and socket connection
             stream.Close();
             tcpClient.Close();
 
+            // Return decrypted file
             return finalBytes;
         }
     }
