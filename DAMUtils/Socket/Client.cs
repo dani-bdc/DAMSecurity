@@ -13,6 +13,9 @@ using System.Threading.Tasks;
 
 namespace DAMUtils.Socket
 {
+    /// <summary>
+    /// Client socket
+    /// </summary>
     public class Client
     {
         private int port;
@@ -46,30 +49,27 @@ namespace DAMUtils.Socket
         /// <returns>byte[] corresponding to decrypted pdf</returns>
         public byte[] Process(string reportName, X509Certificate2 certificate)
         {
-            TcpClient tcpClient = new TcpClient(address, port);
+            byte[] finalBytes;
 
-            var publicKey = certificate.GetRSAPublicKey()?.ExportParameters(false);
+            using (TcpClient tcpClient = new TcpClient(address, port))
+            {
+                using (NetworkStream stream = tcpClient.GetStream())
+                {
+                    var publicKey = certificate.GetRSAPublicKey()?.ExportParameters(false);
+                    var objectBytes = new ObjectPair(reportName, publicKey).ToBytes();
 
-            var objectPair = new ObjectPair(reportName, publicKey);
-            var objectStr = objectPair.Serialize();
-            var objectBytes = Encoding.UTF8.GetBytes(objectStr);
+                    // Send parameters to server
+                    stream.Write(objectBytes, 0, objectBytes.Length);
 
-            NetworkStream stream = tcpClient.GetStream();
+                    // Wait for server response
+                    var str = Utils.ReadToString(stream);
 
-            // Send parameters to server
-            stream.Write(objectBytes, 0, objectBytes.Length);
-
-            // Wait for server response
-            var str = Utils.ReadToString(stream);
-
-            // Deserialize response and decrypt it
-            KeyFilePair response = KeyFilePair.Deserialize(str);
-            byte[] finalBytes = Hybrid.Decrypt(certificate, response);
-
-            // Close stream and socket connection
-            stream.Close();
-            tcpClient.Close();
-
+                    // Deserialize response and decrypt it
+                    KeyFilePair response = KeyFilePair.Deserialize(str);
+                    finalBytes = Hybrid.Decrypt(certificate, response);
+                }
+            }
+            
             // Return decrypted file
             return finalBytes;
         }

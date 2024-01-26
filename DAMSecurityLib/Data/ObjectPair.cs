@@ -16,19 +16,20 @@ namespace DAMSecurityLib.Data
         /// <summary>
         /// Class first object
         /// </summary>
-        public object? Obj1 { get; set; }
+        public object Obj1 { get; set; }
 
         /// <summary>
         /// Class second object
         /// </summary>
-        public object? Obj2 { get; set; }
+        public object Obj2 { get; set; }
 
         /// <summary>
         /// Default constructor
         /// </summary>
         public ObjectPair()
         {
-
+            Obj1 = new object();
+            Obj2 = new object();
         }
 
         /// <summary>
@@ -49,6 +50,16 @@ namespace DAMSecurityLib.Data
         public string Serialize()
         {
             return JsonConvert.SerializeObject(this);
+        }
+
+
+        /// <summary>
+        /// Converts current object to byte[]
+        /// </summary>
+        /// <returns>Byte[] corresponding to current object</returns>
+        public byte[] ToBytes()
+        {
+            return Encoding.UTF8.GetBytes(Serialize());
         }
 
         /// <summary>
