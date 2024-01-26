@@ -1,5 +1,6 @@
 ﻿using DAMSecurityLib.Crypto;
 using DAMSecurityLib.Data;
+using DAMSecurityLib.Exceptions;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -56,6 +57,9 @@ namespace DAMUtils.Socket
                 using (NetworkStream stream = tcpClient.GetStream())
                 {
                     var publicKey = certificate.GetRSAPublicKey()?.ExportParameters(false);
+                    if (publicKey == null)
+                        throw new IncorrectKeyException("Public key is invalid");
+
                     var objectBytes = new ObjectPair(reportName, publicKey).ToBytes();
 
                     // Send parameters to server

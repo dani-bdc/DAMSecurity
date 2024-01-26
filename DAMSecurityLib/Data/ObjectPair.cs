@@ -37,7 +37,7 @@ namespace DAMSecurityLib.Data
         /// </summary>
         /// <param name="obj1">Object1 initial value</param>
         /// <param name="obj2">Object2 initial value</param>
-        public ObjectPair(object? obj1, object? obj2)
+        public ObjectPair(object obj1, object obj2)
         {
             Obj1 = obj1;
             Obj2 = obj2;
