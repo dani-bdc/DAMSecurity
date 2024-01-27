@@ -14,6 +14,7 @@ namespace DAMUtils.Socket.Data
         Success,
         Error,
         InvalidParameters,
-        InvalidType
+        InvalidType,
+        Indeterminate
     }
 }
