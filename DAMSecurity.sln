@@ -11,7 +11,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DAMSecurityGUI", "DAMSecuri
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DAMSecurityTest", "DAMSecurityTest\DAMSecurityTest.csproj", "{BF02E224-2A62-4DA6-8E1E-6F244A525DF1}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DAMUtils", "DAMUtils\DAMUtils.csproj", "{63D5E319-F8B4-4A3C-936D-DDBF2C994CB4}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DAMUtils", "DAMUtils\DAMUtils.csproj", "{63D5E319-F8B4-4A3C-936D-DDBF2C994CB4}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

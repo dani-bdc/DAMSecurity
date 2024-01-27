@@ -23,12 +23,13 @@ namespace DAMUtils.Socket
         public PDF.IPDFGenerator PdfGenerator { get; set; } = new FakePDFGenerator();
 
         /// <summary>
-        /// Construct socket server with default values
+        /// Construct Socket server listening to port
         /// </summary>
-        public Server()
+        /// <param name="port">Port to start listening</param>
+        public Server (int port)
         {
-            port = 1234;
             address = IPAddress.Any;
+            this.port = port;
         }
 
         /// <summary>

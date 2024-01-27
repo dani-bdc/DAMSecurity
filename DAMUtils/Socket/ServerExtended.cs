@@ -4,6 +4,7 @@ using DAMUtils.Socket.Data;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Net.Sockets;
 using System.Security.Cryptography;
 using System.Text;
@@ -18,6 +19,19 @@ namespace DAMUtils.Socket
     public class ServerExtended : Server
     {
         /// <summary>
+        /// Construct socket server with port
+        /// </summary>
+        /// <param name="port">Socket's port</param>
+        public ServerExtended(int port) : base(port) { }
+
+        /// <summary>
+        /// Construct socket server with some values
+        /// </summary>
+        /// <param name="address">Socket's address</param>
+        /// <param name="port">Socket's port</param>
+        public ServerExtended(IPAddress address, int port) : base(address, port) { }
+
+        /// <summary>
         /// Process Client function
         /// </summary>
         protected override void ProcessClient()
@@ -28,7 +42,22 @@ namespace DAMUtils.Socket
             var client = listener.AcceptTcpClient();
 
             NetworkStream stream = client.GetStream();
-            var str = Utils.ReadToString(stream);
+            byte[] buffer = new byte[4096];
+            int bytesRead = 0;
+            StringBuilder receivedData = new StringBuilder();
+
+            // Receive data from client
+            BinaryReader reader = new BinaryReader(stream);
+            var size = reader.ReadInt64();
+            while (bytesRead<size)
+            {
+                bytesRead = bytesRead + stream.Read(buffer, 0, buffer.Length);
+                receivedData.Append(Encoding.UTF8.GetString(buffer, 0, bytesRead));
+            }
+
+            var str= receivedData.ToString();
+
+            ;
 
             ClientRequest clientRequest= ClientRequest.Deserialize(str);
             ServerResponse serverResponse = new ServerResponse();
@@ -61,6 +90,8 @@ namespace DAMUtils.Socket
             var json = serverResponse.Serialize();
             var sendBytes = Encoding.UTF8.GetBytes(json);
 
+            BinaryWriter writer = new BinaryWriter(stream);
+            writer.Write(sendBytes.LongLength);
             stream.Write(sendBytes, 0, sendBytes.Length);
 
         }

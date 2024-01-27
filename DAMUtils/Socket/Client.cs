@@ -95,19 +95,38 @@ namespace DAMUtils.Socket
                     ClientRequest clientRequest = new ClientRequest();
                     clientRequest.RequestType = RequestType.ListReports;
                     var objectBytes = clientRequest.ToBytes();
-                    
+
                     // Send parameters to server
+                    BinaryWriter writer = new BinaryWriter(stream);
+                    writer.Write(objectBytes.LongLength);
                     stream.Write(objectBytes, 0, objectBytes.Length);
 
                     // Wait for server response
-                    var str = Utils.ReadToString(stream);
+                    BinaryReader reader = new BinaryReader(stream);
+                    var size = reader.ReadInt64();
+                    int bytesRead = 0;
+                    byte[] buffer = new byte[1024];
+                    StringBuilder receivedData = new StringBuilder();
+                    while (bytesRead < size)
+                    {
+                        bytesRead = bytesRead + stream.Read(buffer, 0, buffer.Length);
+                        receivedData.Append(Encoding.UTF8.GetString(buffer, 0, bytesRead));
+                    }
+                    var str = receivedData.ToString();
+                    //var str = Utils.ReadToString(stream);
 
                     // Deserialize response
                     ServerResponse serverResponse = ServerResponse.Deserialize(str);
                     if (serverResponse == null || serverResponse.Data == null)
                         throw new Exception();
 
-                    return (List<PDF.ReportInfo>)serverResponse.Data;
+                    var str2 = serverResponse.Data.ToString();
+                    if (str2 == null)
+                        throw new Exception();
+                    var list = Newtonsoft.Json.JsonConvert.DeserializeObject<List<PDF.ReportInfo>>(str2);
+                    if (list == null)
+                        throw new Exception();
+                    return list;
                 }
             }
         }

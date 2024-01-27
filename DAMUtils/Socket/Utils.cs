@@ -21,7 +21,8 @@ namespace DAMUtils.Socket
             StringBuilder receivedData = new StringBuilder();
 
             // Receive data from client
-            while ((bytesRead = stream.Read(buffer, 0, buffer.Length)) > 0)
+            
+                while ((bytesRead = stream.Read(buffer, 0, buffer.Length)) > 0)
             {
                 receivedData.Append(Encoding.UTF8.GetString(buffer, 0, bytesRead));
             }
