@@ -53,7 +53,7 @@ namespace DAMUtils.Socket
             while (true)
             {
                 var client = listener.AcceptTcpClient();
-
+                
                 NetworkStream stream = client.GetStream();
                 var str = Utils.ReadToString(stream);
                 
