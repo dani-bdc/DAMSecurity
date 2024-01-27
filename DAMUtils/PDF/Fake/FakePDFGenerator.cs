@@ -53,7 +53,14 @@ namespace DAMUtils.PDF.Fake
                     {
                         using (Document document = new Document(pdfDocument))
                         {
-                            document.Add(new Paragraph("Hello world!"));
+                            if (prms is ReportInfo)
+                            {
+                                document.Add(new Paragraph(((ReportInfo)prms).Name));
+                            }
+                            else
+                            {
+                                document.Add(new Paragraph("Unknown prms"));
+                            }
                         }
                     }
                 }
