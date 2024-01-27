@@ -19,7 +19,7 @@ namespace DAMUtils.Socket
     {
         private int port;
         private IPAddress address;
-        private TcpListener? listener;
+        protected TcpListener? listener;
         public PDF.IPDFGenerator PdfGenerator { get; set; } = new FakePDFGenerator();
 
         /// <summary>
