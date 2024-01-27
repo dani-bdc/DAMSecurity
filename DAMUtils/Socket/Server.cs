@@ -22,14 +22,6 @@ namespace DAMUtils.Socket
         protected TcpListener? listener;
         public PDF.IPDFGenerator PdfGenerator { get; set; } = new FakePDFGenerator();
 
-        /// <summary>
-        /// Construct socket server with default values
-        /// </summary>
-        public Server()
-        {
-            port = 1234;
-            address = IPAddress.Any;
-        }
 
         /// <summary>
         /// Construct socket server with some values

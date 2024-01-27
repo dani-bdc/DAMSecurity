@@ -92,5 +92,11 @@ namespace DAMSecurityTest
             ObjectPair objPair2 = ObjectPair.Deserialize(str);
             Assert.IsTrue(Convert.ToInt32( objPair.Obj1) == Convert.ToInt32( objPair2.Obj1) && objPair.Obj2.Equals(objPair2.Obj2));
         }
+
+        [Test]
+        public void TestOBjectPairSerializeList()
+        {
+
+        }
     }
 }
