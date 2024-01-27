@@ -52,24 +52,7 @@ namespace DAMUtils.Socket
 
             while (true)
             {
-                var client = listener.AcceptTcpClient();
-                
-                NetworkStream stream = client.GetStream();
-                var str = Utils.ReadToString(stream);
-                
-                ObjectPair pair = ObjectPair.Deserialize(str);
-
-                // Generate pdf 
-                byte[] pdfBytes = PdfGenerator.Generate(pair.Obj1);
-
-                // Encrypt pdf and key
-                KeyFilePair kfp = Hybrid.Crypt((RSAParameters)pair.Obj2, pdfBytes);
-                
-                // Send data to the client
-                var json = kfp.Serialize();
-                var sendBytes = Encoding.UTF8.GetBytes(json);
-
-                stream.Write(sendBytes, 0, sendBytes.Length);
+                ProcessClient();
             }
         }
 
@@ -79,6 +62,34 @@ namespace DAMUtils.Socket
         public void Stop()
         {
             listener?.Stop();
+        }
+
+        /// <summary>
+        /// Process action when client connects to the server
+        /// </summary>
+        protected virtual void ProcessClient()
+        {
+            if (listener == null)
+                return;
+
+            var client = listener.AcceptTcpClient();
+
+            NetworkStream stream = client.GetStream();
+            var str = Utils.ReadToString(stream);
+
+            ObjectPair pair = ObjectPair.Deserialize(str);
+
+            // Generate pdf 
+            byte[] pdfBytes = PdfGenerator.Generate(pair.Obj1);
+
+            // Encrypt pdf and key
+            KeyFilePair kfp = Hybrid.Crypt((RSAParameters)pair.Obj2, pdfBytes);
+
+            // Send data to the client
+            var json = kfp.Serialize();
+            var sendBytes = Encoding.UTF8.GetBytes(json);
+
+            stream.Write(sendBytes, 0, sendBytes.Length);
         }
 
     }
