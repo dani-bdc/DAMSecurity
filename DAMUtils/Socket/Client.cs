@@ -1,7 +1,10 @@
 ﻿using DAMSecurityLib.Crypto;
 using DAMSecurityLib.Data;
 using DAMSecurityLib.Exceptions;
+using DAMUtils.PDF;
+using DAMUtils.Socket.Data;
 using Newtonsoft.Json;
+using Org.BouncyCastle.Tls;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -76,6 +79,80 @@ namespace DAMUtils.Socket
             
             // Return decrypted file
             return finalBytes;
+        }
+
+        /// <summary>
+        /// Asks the server for available reports
+        /// </summary>
+        /// <returns>List of available reports</returns>
+        /// <exception cref="Exception">If occurrs any error or data is incorrect</exception>
+        public List<PDF.ReportInfo> GetAvailableReports()
+        {
+            using (TcpClient tcpClient = new TcpClient(address, port))
+            {
+                using (NetworkStream stream = tcpClient.GetStream())
+                {
+                    ClientRequest clientRequest = new ClientRequest();
+                    clientRequest.RequestType = RequestType.ListReports;
+                    var objectBytes = clientRequest.ToBytes();
+                    
+                    // Send parameters to server
+                    stream.Write(objectBytes, 0, objectBytes.Length);
+
+                    // Wait for server response
+                    var str = Utils.ReadToString(stream);
+
+                    // Deserialize response
+                    ServerResponse serverResponse = ServerResponse.Deserialize(str);
+                    if (serverResponse == null || serverResponse.Data == null)
+                        throw new Exception();
+
+                    return (List<PDF.ReportInfo>)serverResponse.Data;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Sends data to the server and returns decrypted pdf
+        /// </summary>
+        /// <param name="reportInfo">Report and required info to generate</param>
+        /// <param name="certificate">Certificate used to encrypt/decrupt</param>
+        /// <returns>byte[] corresponding to decrypted pdf</returns>
+        public byte[] GetReportData(ReportInfo reportInfo, X509Certificate2 certificate)
+        {
+            byte[] finalBytes;
+
+            using (TcpClient tcpClient = new TcpClient(address, port))
+            {
+                using (NetworkStream stream = tcpClient.GetStream())
+                {
+                    var publicKey = certificate.GetRSAPublicKey()?.ExportParameters(false);
+                    if (publicKey == null)
+                        throw new IncorrectKeyException("Public key is invalid");
+
+                    ClientRequest clientRequest = new ClientRequest();
+                    clientRequest.RequestType = RequestType.GetReport;
+                    clientRequest.Data = new ObjectPair(reportInfo, publicKey);
+                    var objectBytes = clientRequest.ToBytes();
+
+                    // Send parameters to server
+                    stream.Write(objectBytes, 0, objectBytes.Length);
+
+                    // Wait for server response
+                    var str = Utils.ReadToString(stream);
+
+                    // Deserialize response and decrypt it
+                    ServerResponse serverResponse = ServerResponse.Deserialize(str);
+                    if (serverResponse == null || serverResponse.Data == null)
+                        throw new Exception();
+
+                    KeyFilePair responseData = (KeyFilePair)serverResponse.Data;
+                    finalBytes = Hybrid.Decrypt(certificate, responseData);
+
+                    return finalBytes;
+                }
+            }
+
         }
     }
 }
