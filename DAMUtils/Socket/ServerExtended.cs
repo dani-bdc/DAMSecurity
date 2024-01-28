@@ -19,17 +19,14 @@ namespace DAMUtils.Socket
     public class ServerExtended : Server
     {
         /// <summary>
-        /// Construct socket server with port
-        /// </summary>
-        /// <param name="port">Socket's port</param>
-        public ServerExtended(int port) : base(port) { }
-
-        /// <summary>
         /// Construct socket server with some values
         /// </summary>
         /// <param name="address">Socket's address</param>
         /// <param name="port">Socket's port</param>
-        public ServerExtended(IPAddress address, int port) : base(address, port) { }
+        public ServerExtended(IPAddress address, int port) : base(address, port)
+        {
+
+        }
 
         /// <summary>
         /// Process Client function
