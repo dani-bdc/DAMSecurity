@@ -54,8 +54,6 @@ namespace DAMUtils.Socket
 
             var str= receivedData.ToString();
 
-            ;
-
             ClientRequest clientRequest= ClientRequest.Deserialize(str);
             ServerResponse serverResponse = new ServerResponse();
 

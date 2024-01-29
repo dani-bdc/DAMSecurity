@@ -44,28 +44,7 @@ namespace DAMUtils.Socket
 
             while (true)
             {
-<<<<<<< HEAD
-                var client = listener.AcceptTcpClient();
-
-                NetworkStream stream = client.GetStream();
-                
-                var str = Utils.ReadToString(stream); 
-                ObjectPair pair = ObjectPair.Deserialize(str);
-
-                // Generate pdf 
-                byte[] pdfBytes = PdfGenerator.Generate(pair.Obj1);
-
-                // Encrypt pdf and key
-                KeyFilePair kfp = Hybrid.Crypt((RSAParameters)pair.Obj2, pdfBytes);
-                
-                // Send data to the client
-                var json = kfp.Serialize();
-                var sendBytes = Encoding.UTF8.GetBytes(json);
-
-                stream.Write(sendBytes, 0, sendBytes.Length);
-=======
                 ProcessClient();
->>>>>>> c756db4cb918756ae9d822a152ddf266c5abaebf
             }
         }
 
