@@ -6,17 +6,16 @@ using System.Threading.Tasks;
 
 namespace DAMSecurityLib.Exceptions
 {
-
     /// <summary>
-    /// Incorrect Key Exception
+    /// Decrypt Exception class
     /// </summary>
-    public class IncorrectKeyException : Exception
+    public class DecryptException : Exception
     {
         /// <summary>
         /// Init class with message
         /// </summary>
         /// <param name="message">Exception's message</param>
-        public IncorrectKeyException(String message) : base(message) { }
+        public DecryptException(String message) : base(message) { }
 
     }
 }

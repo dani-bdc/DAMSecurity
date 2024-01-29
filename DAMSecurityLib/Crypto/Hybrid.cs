@@ -1,4 +1,5 @@
 ﻿using DAMSecurityLib.Data;
+using DAMSecurityLib.Exceptions;
 using Org.BouncyCastle.Tls;
 using System;
 using System.Collections.Generic;
@@ -35,15 +36,25 @@ namespace DAMSecurityLib.Crypto
             return keyFilePair;
         }
 
+
+
         /// <summary>
         /// Decrypts file crypted with AES/RSA using certificate
         /// </summary>
         /// <param name="certificate">Certificate to decrypt with</param>
         /// <param name="keyFilePair">Encrypted key and file</param>
         /// <returns>byte[] corresponding to decrypted file</returns>
+        /// <exception cref="DecryptException">If couldn't decrypt key</exception>
         public static byte[] Decrypt(X509Certificate2 certificate, KeyFilePair keyFilePair)
         {
-            byte[] aesKey = RSACrypt.DecryptAESKeyWithPrivateKey(keyFilePair.Key, certificate);
+            byte[] aesKey;
+            try
+            {
+                aesKey = RSACrypt.DecryptAESKeyWithPrivateKey(keyFilePair.Key, certificate);
+            } catch (Exception)
+            {
+                throw new DecryptException("Unable to decrypt key");
+            }
             AESCrypt aes = new AESCrypt();
             aes.Key = aesKey;
             aes.GenerateIV();
