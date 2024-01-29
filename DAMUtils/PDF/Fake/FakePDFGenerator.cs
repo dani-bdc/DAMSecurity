@@ -11,6 +11,38 @@ namespace DAMUtils.PDF.Fake
 {
     public class FakePDFGenerator : IPDFGenerator
     {
+        /// <summary>
+        /// Generate list of available reports
+        /// </summary>
+        /// <returns>List of avaiable reports</returns>
+        List<ReportInfo> IPDFGenerator.AvailableReports()
+        {
+            List<ReportInfo> list = new List<ReportInfo>();
+            ReportInfo report;
+            ReportParameter param;
+
+            report = new ReportInfo();
+            report.Name = "Report1";
+            list.Add(report);
+
+            report = new ReportInfo();
+            report.Name = "Report2";
+
+            param = new ReportParameter();
+            param.Mandatory = true;
+            param.Name = "Param1";
+            report.Parameters.Add(param);
+
+            list.Add(report);
+
+            return list;
+        }
+
+        /// <summary>
+        ///  Generate report passed by param
+        /// </summary>
+        /// <param name="prms"></param>
+        /// <returns></returns>
         byte[] IPDFGenerator.Generate(object prms)
         {
             using (MemoryStream ms = new MemoryStream())
@@ -21,7 +53,14 @@ namespace DAMUtils.PDF.Fake
                     {
                         using (Document document = new Document(pdfDocument))
                         {
-                            document.Add(new Paragraph("Hello world!"));
+                            if (prms is ReportInfo)
+                            {
+                                document.Add(new Paragraph(((ReportInfo)prms).Name));
+                            }
+                            else
+                            {
+                                document.Add(new Paragraph("Unknown prms"));
+                            }
                         }
                     }
                 }

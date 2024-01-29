@@ -19,17 +19,9 @@ namespace DAMUtils.Socket
     {
         private int port;
         private IPAddress address;
-        private TcpListener? listener;
+        protected TcpListener? listener;
         public PDF.IPDFGenerator PdfGenerator { get; set; } = new FakePDFGenerator();
 
-        /// <summary>
-        /// Construct socket server with default values
-        /// </summary>
-        public Server()
-        {
-            port = 1234;
-            address = IPAddress.Any;
-        }
 
         /// <summary>
         /// Construct socket server with some values
@@ -52,6 +44,7 @@ namespace DAMUtils.Socket
 
             while (true)
             {
+<<<<<<< HEAD
                 var client = listener.AcceptTcpClient();
 
                 NetworkStream stream = client.GetStream();
@@ -70,6 +63,9 @@ namespace DAMUtils.Socket
                 var sendBytes = Encoding.UTF8.GetBytes(json);
 
                 stream.Write(sendBytes, 0, sendBytes.Length);
+=======
+                ProcessClient();
+>>>>>>> c756db4cb918756ae9d822a152ddf266c5abaebf
             }
         }
 
@@ -79,6 +75,34 @@ namespace DAMUtils.Socket
         public void Stop()
         {
             listener?.Stop();
+        }
+
+        /// <summary>
+        /// Process action when client connects to the server
+        /// </summary>
+        protected virtual void ProcessClient()
+        {
+            if (listener == null)
+                return;
+
+            var client = listener.AcceptTcpClient();
+
+            NetworkStream stream = client.GetStream();
+            var str = Utils.ReadToString(stream);
+
+            ObjectPair pair = ObjectPair.Deserialize(str);
+
+            // Generate pdf 
+            byte[] pdfBytes = PdfGenerator.Generate(pair.Obj1);
+
+            // Encrypt pdf and key
+            KeyFilePair kfp = Hybrid.Crypt((RSAParameters)pair.Obj2, pdfBytes);
+
+            // Send data to the client
+            var json = kfp.Serialize();
+            var sendBytes = Encoding.UTF8.GetBytes(json);
+
+            stream.Write(sendBytes, 0, sendBytes.Length);
         }
 
     }

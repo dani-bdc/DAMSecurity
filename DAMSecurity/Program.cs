@@ -1,11 +1,13 @@
 ﻿
 using DAMSecurityLib.Certificates;
 using DAMSecurityLib.Crypto;
+using DAMSecurityLib.Data;
 using iText.Kernel.Pdf;
 using iText.Layout;
 using iText.Layout.Element;
 using Org.BouncyCastle.Asn1.X509;
 using System.Collections.Specialized;
+using System.Net;
 using System.Security.Cryptography.X509Certificates;
 
 namespace DAMSecurity
@@ -14,6 +16,10 @@ namespace DAMSecurity
     {
         static void Main(string[] args)
         {
+            
+            
+            
+            
             DAMSecurityLib.Crypto.RSACrypt.SavePublicKey(@"c:\test\cert.pfx", "123456", @"c:\test\publik.key");
 
             var cert = new X509Certificate2(@"c:\test\cert.pfx", "123456");
@@ -28,7 +34,7 @@ namespace DAMSecurity
             var newKey=DAMSecurityLib.Crypto.RSACrypt.DecryptAESKeyWithPrivateKey(encryptedKey, cert);
 
             Console.WriteLine("Final");
-
-        }
+            
+         }
     }
 }

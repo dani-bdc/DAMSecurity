@@ -19,6 +19,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\DAMSecurityLib\DAMSecurityLib.csproj" />
+    <ProjectReference Include="..\DAMUtils\DAMUtils.csproj" />
   </ItemGroup>
 
 </Project>
