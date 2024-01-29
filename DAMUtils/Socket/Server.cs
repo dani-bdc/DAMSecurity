@@ -55,8 +55,8 @@ namespace DAMUtils.Socket
                 var client = listener.AcceptTcpClient();
 
                 NetworkStream stream = client.GetStream();
-                var str = Utils.ReadToString(stream);
                 
+                var str = Utils.ReadToString(stream); 
                 ObjectPair pair = ObjectPair.Deserialize(str);
 
                 // Generate pdf 
